@@ -1531,6 +1531,7 @@
             <button class="nav-btn" data-agent="pam">Pam</button>
             <button class="nav-btn" data-agent="sheldon">Sheldon</button>
             <button class="nav-btn" data-agent="richard">Richard</button>
+            <button class="nav-btn" data-agent="zeno">Zeno</button>
         </div>
     </nav>
 
@@ -1570,46 +1571,51 @@
                 <!-- Trunk line from Jarvis -->
                 <line x1="500" y1="0" x2="500" y2="40" stroke="rgba(249,104,70,0.2)" stroke-width="2" />
                 <line x1="500" y1="0" x2="500" y2="40" class="glow-line" style="animation-delay:0s;" />
-                <!-- Horizontal branch -->
-                <line x1="72" y1="40" x2="928" y2="40" stroke="rgba(249,104,70,0.12)" stroke-width="2" />
-                <line x1="72" y1="40" x2="928" y2="40" class="glow-line"
+                <!-- Horizontal branch (8 agents: 55,182,309,436,564,691,818,945) -->
+                <line x1="55" y1="40" x2="945" y2="40" stroke="rgba(249,104,70,0.12)" stroke-width="2" />
+                <line x1="55" y1="40" x2="945" y2="40" class="glow-line"
                     style="animation-delay:0.3s;stroke-dasharray:12 8;" />
                 <!-- Vertical drops to each agent -->
-                <line x1="72" y1="40" x2="72" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="72" y1="40" x2="72" y2="100" class="glow-line" style="animation-delay:0.5s;" />
-                <line x1="215" y1="40" x2="215" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="215" y1="40" x2="215" y2="100" class="glow-line" style="animation-delay:0.7s;" />
-                <line x1="358" y1="40" x2="358" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="358" y1="40" x2="358" y2="100" class="glow-line" style="animation-delay:0.9s;" />
-                <line x1="500" y1="40" x2="500" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="500" y1="40" x2="500" y2="100" class="glow-line" style="animation-delay:1.1s;" />
-                <line x1="643" y1="40" x2="643" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="643" y1="40" x2="643" y2="100" class="glow-line" style="animation-delay:1.3s;" />
-                <line x1="785" y1="40" x2="785" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="785" y1="40" x2="785" y2="100" class="glow-line" style="animation-delay:1.5s;" />
-                <line x1="928" y1="40" x2="928" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
-                <line x1="928" y1="40" x2="928" y2="100" class="glow-line" style="animation-delay:1.7s;" />
+                <line x1="55" y1="40" x2="55" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="55" y1="40" x2="55" y2="100" class="glow-line" style="animation-delay:0.5s;" />
+                <line x1="182" y1="40" x2="182" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="182" y1="40" x2="182" y2="100" class="glow-line" style="animation-delay:0.7s;" />
+                <line x1="309" y1="40" x2="309" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="309" y1="40" x2="309" y2="100" class="glow-line" style="animation-delay:0.9s;" />
+                <line x1="436" y1="40" x2="436" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="436" y1="40" x2="436" y2="100" class="glow-line" style="animation-delay:1.1s;" />
+                <line x1="564" y1="40" x2="564" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="564" y1="40" x2="564" y2="100" class="glow-line" style="animation-delay:1.3s;" />
+                <line x1="691" y1="40" x2="691" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="691" y1="40" x2="691" y2="100" class="glow-line" style="animation-delay:1.5s;" />
+                <line x1="818" y1="40" x2="818" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="818" y1="40" x2="818" y2="100" class="glow-line" style="animation-delay:1.7s;" />
+                <line x1="945" y1="40" x2="945" y2="100" stroke="rgba(249,104,70,0.15)" stroke-width="2" />
+                <line x1="945" y1="40" x2="945" y2="100" class="glow-line" style="animation-delay:1.9s;" />
                 <!-- Flowing energy dots -->
                 <circle r="3" class="glow-dot">
-                    <animateMotion dur="2.5s" repeatCount="indefinite" path="M500,0 L500,40 L72,40 L72,100" />
+                    <animateMotion dur="2.5s" repeatCount="indefinite" path="M500,0 L500,40 L55,40 L55,100" />
                 </circle>
                 <circle r="3" class="glow-dot" style="animation-delay:0.4s;">
-                    <animateMotion dur="2.8s" repeatCount="indefinite" path="M500,0 L500,40 L358,40 L358,100" />
+                    <animateMotion dur="2.8s" repeatCount="indefinite" path="M500,0 L500,40 L309,40 L309,100" />
                 </circle>
                 <circle r="3" class="glow-dot" style="animation-delay:0.8s;">
-                    <animateMotion dur="2.6s" repeatCount="indefinite" path="M500,0 L500,40 L643,40 L643,100" />
+                    <animateMotion dur="2.6s" repeatCount="indefinite" path="M500,0 L500,40 L564,40 L564,100" />
                 </circle>
                 <circle r="3" class="glow-dot" style="animation-delay:1.2s;">
-                    <animateMotion dur="3s" repeatCount="indefinite" path="M500,0 L500,40 L928,40 L928,100" />
+                    <animateMotion dur="3s" repeatCount="indefinite" path="M500,0 L500,40 L945,40 L945,100" />
                 </circle>
                 <circle r="2.5" class="glow-dot" style="animation-delay:1.6s;">
-                    <animateMotion dur="2.4s" repeatCount="indefinite" path="M500,0 L500,40 L215,40 L215,100" />
+                    <animateMotion dur="2.4s" repeatCount="indefinite" path="M500,0 L500,40 L182,40 L182,100" />
                 </circle>
                 <circle r="2.5" class="glow-dot" style="animation-delay:2s;">
-                    <animateMotion dur="2.7s" repeatCount="indefinite" path="M500,0 L500,40 L785,40 L785,100" />
+                    <animateMotion dur="2.7s" repeatCount="indefinite" path="M500,0 L500,40 L818,40 L818,100" />
                 </circle>
                 <circle r="2" class="glow-dot" style="animation-delay:0.6s;">
-                    <animateMotion dur="2.3s" repeatCount="indefinite" path="M500,0 L500,40 L500,40 L500,100" />
+                    <animateMotion dur="2.3s" repeatCount="indefinite" path="M500,0 L500,40 L436,40 L436,100" />
+                </circle>
+                <circle r="2" class="glow-dot" style="animation-delay:1.4s;">
+                    <animateMotion dur="2.9s" repeatCount="indefinite" path="M500,0 L500,40 L691,40 L691,100" />
                 </circle>
             </svg>
 
@@ -1642,6 +1648,10 @@
                 <div class="org-agent" data-agent="richard">
                     <div class="a-name">Richard</div>
                     <div class="a-role">Hiring</div>
+                </div>
+                <div class="org-agent" data-agent="zeno">
+                    <div class="a-name">Zeno</div>
+                    <div class="a-role">Voice Teaching</div>
                 </div>
             </div>
         </div>
@@ -3213,6 +3223,280 @@
         </div>
     </section>
 
+
+    <!-- ====== ZENO ====== -->
+    <section class="agent-section" id="agent-zeno">
+
+        <!-- Slide 1: OPT Framework -->
+        <div class="slide slide-opt">
+            <div class="hud-scanline-slide"></div>
+            <div class="opt-header">
+                <h2 class="reveal"><span>OPT</span> Framework — Zeno</h2>
+                <p class="reveal">Why Zeno exists — and why it works</p>
+            </div>
+            <div class="opt-grid">
+                <div class="opt-card reveal">
+                    <div class="opt-letter">O</div>
+                    <div class="opt-word">Operating Model</div>
+                    <ul class="opt-bullets">
+                        <li><strong>Role:</strong> Mentors at 100xEngineers teach 50,000+ engineers — lesson quality directly determines student outcomes</li>
+                        <li><strong>Success looks like:</strong> Every session has a structured plan, branded slides, and tiered practice — without eating into prep time</li>
+                        <li><strong>Why it breaks:</strong> 3-4 hours of manual content creation per session means less time actually teaching</li>
+                    </ul>
+                    <div class="opt-key">→ TEACHING TIME = THE REAL PRODUCT</div>
+                </div>
+                <div class="opt-card reveal">
+                    <div class="opt-letter">P</div>
+                    <div class="opt-word">Process</div>
+                    <ul class="opt-bullets">
+                        <li>I open a doc and plan the session structure manually</li>
+                        <li>I build slides in Google Slides or Canva (2-3 hours)</li>
+                        <li>I write practice questions from scratch per difficulty level</li>
+                        <li>I format everything to match 100x brand guidelines</li>
+                        <li>I upload all files to Drive and organize them manually</li>
+                        <li>This costs 3-4 hours per session, every session</li>
+                    </ul>
+                    <div class="opt-key">→ TEXTBOOK AUTOMATABLE</div>
+                </div>
+                <div class="opt-card reveal">
+                    <div class="opt-letter">T</div>
+                    <div class="opt-word">Task</div>
+                    <ul class="opt-bullets">
+                        <li>Mentor speaks topic — Zeno runs 7 HITL discovery questions via voice</li>
+                        <li>RAG search over 33 lectures injects curriculum context in real-time</li>
+                        <li>generate_lesson_plan worker produces 1500-word structured Markdown</li>
+                        <li>100x Skill Engine renders pixel-perfect PPTX + DOCX (deterministic, 10x cheaper)</li>
+                        <li>Auto-uploads lesson plan, slides, and practice set to Google Drive</li>
+                    </ul>
+                    <div class="opt-key">→ ZERO HUMAN EFFORT ON EXECUTION</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: How Zeno Works -->
+        <div class="slide slide-pipe">
+            <div class="hud-scanline-slide"></div>
+            <div class="pipe-header reveal">
+                <h2>How <em>Zeno</em> Works</h2>
+                <p>4-phase autonomous lesson generation pipeline</p>
+            </div>
+            <div class="pipe-flow reveal">
+                <div class="pipe-step">
+                    <div class="sn">1</div>
+                    <div class="st">Voice Conversation</div>
+                    <div class="sd">Mentor speaks topic. Zeno asks 7 HITL discovery questions via LiveKit voice agent</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step">
+                    <div class="sn">2</div>
+                    <div class="st">RAG Context</div>
+                    <div class="sd">FAISS semantic search over 33 lectures surfaces related prior content in real-time</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step">
+                    <div class="sn">3</div>
+                    <div class="st">100x Skill Engine</div>
+                    <div class="sd">LLM parses intent to JSON spec, deterministic Python renderer builds branded PPTX/DOCX</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step">
+                    <div class="sn">4</div>
+                    <div class="st">Auto Upload</div>
+                    <div class="sd">Lesson plan + slides + practice sets auto-uploaded to Google Drive via OAuth2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Custom Skill Engine -->
+        <div class="slide slide-pipe">
+            <div class="hud-scanline-slide"></div>
+            <div class="pipe-header reveal">
+                <h2>100x Custom <em>Skill Engine</em></h2>
+                <p>Two-phase pipeline — LLM for intent, Python for rendering. Zero formatting bugs.</p>
+            </div>
+            <div class="pipe-flow reveal">
+                <div class="pipe-step">
+                    <div class="sn" style="font-size:10px;letter-spacing:-0.5px;">IN</div>
+                    <div class="st">Lesson Plan</div>
+                    <div class="sd">.md file from voice session</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step" style="border-color:rgba(249,104,70,0.3);background:rgba(249,104,70,0.04);">
+                    <div class="sn">P1</div>
+                    <div class="st">LLM Parser</div>
+                    <div class="sd">Claude Haiku extracts structure into typed JSON spec</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step">
+                    <div class="sn" style="font-size:10px;letter-spacing:-0.5px;">JS</div>
+                    <div class="st">JSON Spec</div>
+                    <div class="sd">Validated Pydantic schema — typed, structured</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step" style="border-color:rgba(34,170,68,0.3);background:rgba(34,170,68,0.04);">
+                    <div class="sn">P2</div>
+                    <div class="st">Python Renderer</div>
+                    <div class="sd">Deterministic python-pptx / python-docx. Zero LLM tokens consumed.</div>
+                </div>
+                <div class="pa">→</div>
+                <div class="pipe-step">
+                    <div class="sn" style="font-size:10px;letter-spacing:-0.5px;">OUT</div>
+                    <div class="st">Branded File</div>
+                    <div class="sd">PPTX (13-20 slides) or DOCX (3 difficulty tiers)</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:32px;margin-top:28px;max-width:900px;width:100%;justify-content:center;">
+                <div class="ba-stat reveal">
+                    <div class="num">9</div>
+                    <div class="unit">Slide Types</div>
+                </div>
+                <div class="ba-stat reveal">
+                    <div class="num">3</div>
+                    <div class="unit">Difficulty Tiers</div>
+                </div>
+                <div class="ba-stat reveal">
+                    <div class="num">0</div>
+                    <div class="unit">Rendering API Calls</div>
+                </div>
+                <div class="ba-stat reveal">
+                    <div class="num">100%</div>
+                    <div class="unit">Brand Compliant</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Cost Comparison -->
+        <div class="slide slide-ba">
+            <div class="hud-scanline-slide"></div>
+            <div style="text-align:center;margin-bottom:24px;">
+                <h2 class="reveal" style="font-size:38px;font-weight:700;letter-spacing:-1px;">Cost: <span style="color:var(--coral);">Before vs Now</span></h2>
+                <p class="reveal" style="color:var(--text-muted);font-size:15px;margin-top:6px;font-family:var(--mono);">100x Custom Skill Engine vs Raw LLM generation</p>
+            </div>
+            <div class="ba-container reveal">
+                <div class="ba-card ba-before">
+                    <div class="ba-label">Before — Raw LLM Generation</div>
+                    <h3>Claude Sonnet/Opus<br>Free-form output</h3>
+                    <ul class="ba-list">
+                        <li>~8k input + ~5k output tokens per deck</li>
+                        <li>Sonnet 4.6: ~$0.099/deck ($3/$15 per MTok)</li>
+                        <li>Opus 4.6: ~$0.165/deck ($5/$25 per MTok)</li>
+                        <li>Full lesson (plan + slides + practice): ~$0.28</li>
+                        <li>Inconsistent, off-brand layout every time</li>
+                        <li>High failure rate from LLM formatting errors</li>
+                    </ul>
+                </div>
+                <div class="ba-arrow">→</div>
+                <div class="ba-card ba-after">
+                    <div class="ba-label">Now — 100x Custom Engine + Haiku 4.5</div>
+                    <h3>Deterministic<br>Rendering Engine</h3>
+                    <ul class="ba-list">
+                        <li>Phase 1 (Haiku 4.5): ~3k in + ~2k out — $1/$5 per MTok</li>
+                        <li>Per deck spec cost: ~$0.013 (vs $0.099 raw Sonnet)</li>
+                        <li>Phase 2 (Python renderer): $0.000 — zero LLM cost</li>
+                        <li>Full lesson (plan + slides + practice): ~$0.06</li>
+                        <li>Pixel-perfect, 100x brand-consistent every time</li>
+                    </ul>
+                    <div class="ba-stat">
+                        <div class="num">87%</div>
+                        <div class="unit">cheaper per deck vs Sonnet 4.6 raw</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Bento Summary (from slides 2, 3, 5) -->
+        <div class="slide slide-bento">
+            <div class="bento">
+
+                <!-- [Slide 2] Generation time impact — wide top banner -->
+                <div class="bt reveal"
+                    style="grid-column:1/8;grid-row:1/2;background:linear-gradient(135deg,rgba(20,20,20,0.8),rgba(30,30,30,0.5));backdrop-filter:blur(20px);">
+                    <div class="tl" style="color:var(--text-dim);">LESSON PREP TIME RECLAIMED</div>
+                    <div class="impact-stat">
+                        <span class="impact-old">4 hrs</span>
+                        <span class="impact-arrow">→</span>
+                        <span class="impact-new">3</span>
+                        <span class="impact-unit">min</span>
+                    </div>
+                </div>
+
+                <!-- [Slide 3] 5 specialized tools -->
+                <div class="bt reveal"
+                    style="grid-column:8/13;grid-row:1/3;background:linear-gradient(135deg,rgba(22,32,22,0.8),rgba(26,42,26,0.6));backdrop-filter:blur(20px);border-color:rgba(100,160,100,0.15);">
+                    <div class="tl" style="color:#8bc88b;">SPECIALIZED TOOLS</div>
+                    <div class="tv" style="color:#c8e6c8;font-size:52px;">5</div>
+                    <div class="ts" style="color:#8bc88b;">search · lecture · lesson · slides · practice</div>
+                </div>
+
+                <!-- [Slide 2] 4-phase pipeline chips -->
+                <div class="bt reveal"
+                    style="grid-column:1/5;grid-row:2/4;background:linear-gradient(135deg,rgba(30,20,50,0.8),rgba(40,25,65,0.6));backdrop-filter:blur(20px);border-color:rgba(140,80,220,0.15);">
+                    <div class="tl" style="color:rgba(180,130,255,0.8);">4-PHASE PIPELINE</div>
+                    <div class="tv" style="color:rgba(200,160,255,0.9);font-size:18px;margin-bottom:10px;">Voice-First Flow</div>
+                    <div class="chips">
+                        <span class="chip" style="background:rgba(140,80,220,0.15);color:rgba(200,160,255,0.9);border:1px solid rgba(140,80,220,0.2);">Voice HITL</span>
+                        <span class="chip" style="background:rgba(140,80,220,0.15);color:rgba(200,160,255,0.9);border:1px solid rgba(140,80,220,0.2);">RAG Search</span>
+                        <span class="chip" style="background:rgba(140,80,220,0.15);color:rgba(200,160,255,0.9);border:1px solid rgba(140,80,220,0.2);">Skill Engine</span>
+                        <span class="chip" style="background:rgba(140,80,220,0.15);color:rgba(200,160,255,0.9);border:1px solid rgba(140,80,220,0.2);">Drive Upload</span>
+                    </div>
+                </div>
+
+                <!-- [Slide 3] Single agent architecture -->
+                <div class="bt reveal"
+                    style="grid-column:5/8;grid-row:2/3;background:linear-gradient(135deg,rgba(20,20,30,0.8),rgba(25,25,40,0.6));backdrop-filter:blur(20px);">
+                    <div class="tl" style="color:var(--text-dim);">ARCHITECTURE</div>
+                    <div class="tv" style="font-size:22px;">Single Agent</div>
+                    <div class="ts">No multi-agent overhead</div>
+                </div>
+
+                <!-- Center tile -->
+                <div class="bt bt-center reveal" style="grid-column:5/10;grid-row:3/5;">
+                    <div class="center-name">Zeno</div>
+                    <div class="center-role">Voice Teaching Agent</div>
+                </div>
+
+                <!-- [Slide 5] Cost impact: $0.28 → $0.06 -->
+                <div class="bt reveal"
+                    style="grid-column:10/13;grid-row:3/5;background:linear-gradient(135deg,rgba(249,104,70,0.09),rgba(249,104,70,0.03));backdrop-filter:blur(20px);border-color:rgba(249,104,70,0.2);">
+                    <div class="tl" style="color:var(--coral);">COST PER FULL LESSON</div>
+                    <div class="impact-stat" style="flex-direction:column;align-items:flex-start;gap:0;">
+                        <span class="impact-old" style="color:var(--text-dim);font-size:22px;">$0.28</span>
+                        <span class="impact-arrow" style="font-size:16px;line-height:1.2;">→</span>
+                        <span class="impact-new" style="font-size:44px;">$0.06</span>
+                    </div>
+                </div>
+
+                <!-- [Slide 3] RAG knowledge base -->
+                <div class="bt reveal"
+                    style="grid-column:1/5;grid-row:4/7;background:linear-gradient(135deg,rgba(15,35,20,0.8),rgba(20,45,28,0.6));backdrop-filter:blur(20px);border-color:rgba(80,160,100,0.15);">
+                    <div class="tl" style="color:rgba(120,200,140,0.8);">RAG KNOWLEDGE BASE</div>
+                    <div class="tv" style="color:rgba(160,230,180,0.9);font-size:48px;">33</div>
+                    <div class="ts" style="color:rgba(120,200,140,0.8);">Lectures indexed · 316KB · FAISS IndexFlatL2</div>
+                </div>
+
+                <!-- [Slide 5] 87% cheaper per deck -->
+                <div class="bt bt-light reveal" style="grid-column:10/13;grid-row:5/7;">
+                    <div class="tl">SAVINGS PER DECK</div>
+                    <div class="tv" style="font-size:48px;">87%</div>
+                    <div class="ts">cheaper vs Sonnet 4.6 raw generation</div>
+                </div>
+
+                <!-- [Slide 2] 3 auto-generated outputs -->
+                <div class="bt reveal"
+                    style="grid-column:5/10;grid-row:5/7;background:linear-gradient(135deg,rgba(42,26,8,0.8),rgba(58,37,16,0.6));backdrop-filter:blur(20px);border-color:rgba(245,166,35,0.15);">
+                    <div class="tl" style="color:var(--amber-accent);">AUTO-GENERATED OUTPUTS</div>
+                    <div class="tv" style="color:var(--amber-accent);font-size:20px;margin-bottom:10px;">1 voice session → 3 materials</div>
+                    <div class="chips">
+                        <span class="chip" style="background:rgba(245,166,35,0.15);color:var(--amber-accent);border:1px solid rgba(245,166,35,0.2);">Lesson Plan</span>
+                        <span class="chip" style="background:rgba(245,166,35,0.15);color:var(--amber-accent);border:1px solid rgba(245,166,35,0.2);">Slide Deck</span>
+                        <span class="chip" style="background:rgba(245,166,35,0.15);color:var(--amber-accent);border:1px solid rgba(245,166,35,0.2);">Practice Set</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
 
     <script>
         // ====== TAB SWITCHING ======

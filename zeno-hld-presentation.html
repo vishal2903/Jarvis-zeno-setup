@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeno - Architecture Overview</title>
+
+    <!-- Fonts: Space Grotesk + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (Coral Theme)
+           =========================================== */
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #141414;
+            --bg-highlight: rgba(249, 104, 70, 0.08);
+            --text-primary: #f0f0f0;
+            --text-secondary: #999999;
+            --text-muted: #555555;
+            --accent: #f96846;
+            --accent-light: rgba(249, 104, 70, 0.1);
+            --accent-glow: rgba(249, 104, 70, 0.25);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-bright: #f96846;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --slide-padding: clamp(1.5rem, 4vw, 3rem);
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-normal: 0.6s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            font-family: var(--font-display);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(ellipse at 80% 20%,
+                    rgba(249, 104, 70, 0.06) 0%,
+                    transparent 55%);
+            pointer-events: none;
+            animation: subtleFloat 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 40%;
+            height: 60%;
+            background: radial-gradient(ellipse at 20% 80%,
+                    rgba(249, 104, 70, 0.04) 0%,
+                    transparent 55%);
+            pointer-events: none;
+        }
+
+        @keyframes subtleFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-10px, -10px);
+            }
+        }
+
+        /* =========================================== PROGRESS BAR */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s var(--ease-smooth);
+            z-index: 100;
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* =========================================== NAV DOTS */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            z-index: 50;
+        }
+
+        .nav-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(249, 104, 70, 0.3);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .nav-dot:hover {
+            background: rgba(249, 104, 70, 0.6);
+            transform: scale(1.3);
+        }
+
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.5);
+        }
+
+        /* =========================================== SLIDE */
+        .slide {
+            height: 100vh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            position: absolute;
+            top: 1.25rem;
+            left: 1.5rem;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+.slide-number {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* =========================================== TYPOGRAPHY */
+        .section-label {
+            font-size: 11px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 56px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        h1 .highlight {
+            color: var(--accent);
+        }
+
+        h2 {
+            font-size: clamp(20px, 3.5vw, 32px);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+        }
+
+        h3 {
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: clamp(13px, 1.6vw, 16px);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 680px;
+        }
+
+        p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        /* =========================================== ANIMATIONS */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) {
+            transition-delay: 0.08s;
+        }
+
+        .reveal:nth-child(2) {
+            transition-delay: 0.16s;
+        }
+
+        .reveal:nth-child(3) {
+            transition-delay: 0.24s;
+        }
+
+        .reveal:nth-child(4) {
+            transition-delay: 0.32s;
+        }
+
+        .reveal:nth-child(5) {
+            transition-delay: 0.40s;
+        }
+
+        .reveal:nth-child(6) {
+            transition-delay: 0.48s;
+        }
+
+        .reveal:nth-child(7) {
+            transition-delay: 0.56s;
+        }
+
+        .reveal:nth-child(8) {
+            transition-delay: 0.64s;
+        }
+
+        /* =========================================== BADGES & CARDS */
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono);
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .number-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            color: white;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 3px 10px rgba(249, 104, 70, 0.3);
+            transition: transform 0.3s var(--ease-bounce);
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.3s var(--ease-smooth);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .card:hover {
+            border-color: rgba(249, 104, 70, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .card-highlight {
+            background: var(--bg-highlight);
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 4px 16px rgba(249, 104, 70, 0.08);
+        }
+
+        /* =========================================== LAYOUT */
+        .center {
+            text-align: center;
+            align-items: center;
+        }
+
+        .center .subtitle,
+        .center p,
+        .center .card {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .max-width {
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* =========================================== ARCH DIAGRAM */
+        .arch-diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .arch-box {
+            background: var(--bg-card);
+            border: 1px solid rgba(249, 104, 70, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(249, 104, 70, 0.1);
+        }
+
+        .arch-box.secondary {
+            border: 1px solid var(--border);
+            box-shadow: none;
+            background: rgba(20, 20, 20, 0.6);
+        }
+
+        .arch-arrow {
+            text-align: center;
+            font-size: 20px;
+            color: var(--accent);
+            margin: 0.3rem 0;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(249, 104, 70, 0.1);
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            margin: 0.2rem;
+            border: 1px solid rgba(249, 104, 70, 0.15);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 0.9rem;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .tool-card:hover {
+            border-color: rgba(249, 104, 70, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+            font-size: 12px;
+            font-family: var(--font-mono);
+        }
+
+        .tool-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* =========================================== STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(249, 104, 70, 0.15);
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================================== COST TABLE */
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 13px;
+        }
+
+        .cost-table th {
+            background: var(--accent);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cost-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .cost-table tr:nth-child(even) td {
+            background: var(--bg-secondary);
+        }
+
+        .cost-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cost-table .old {
+            color: #ee6666;
+            font-weight: 600;
+        }
+
+        .cost-table .new {
+            color: #44cc66;
+            font-weight: 600;
+        }
+
+        .cost-table .saving {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* =========================================== PIPELINE */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 1rem 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+
+        .pipeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .pipeline-step:hover {
+            border-color: rgba(249, 104, 70, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .pipeline-step.highlight {
+            border-color: rgba(249, 104, 70, 0.3);
+            background: var(--bg-highlight);
+        }
+
+        .pipeline-step.deterministic {
+            border-color: rgba(34, 170, 68, 0.3);
+            background: rgba(34, 170, 68, 0.06);
+        }
+
+        .pipeline-arrow {
+            font-size: 20px;
+            color: var(--accent);
+            padding: 0 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .step-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .step-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .step-sub {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-family: var(--font-mono);
+        }
+
+        /* =========================================== KEYBOARD HINT */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-muted);
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            z-index: 50;
+        }
+
+        /* =========================================== RESPONSIVE */
+        @media (max-width: 768px) {
+
+            .nav-dots,
+            .keyboard-hint {
+                display: none;
+            }
+
+            .slide-number {
+                display: none;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .pipeline {
+                flex-direction: column;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+
+            body::before {
+                animation: none;
+            }
+        }
+
+        /* =========================================== JARVIS HUD THEME ADDITIONS */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(ellipse at 50% 30%, rgba(249, 104, 70, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Subtle scan line */
+        .slide::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 20%, rgba(249, 104, 70, 0.03) 50%, transparent 80%);
+            top: 0;
+            left: 0;
+            animation: scanDown 8s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes scanDown {
+            0% {
+                top: 0;
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            95% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Glow on slide headings */
+        h1 .highlight {
+            text-shadow: 0 0 20px rgba(249, 104, 70, 0.3);
+        }
+
+        /* Badge glow */
+        .badge {
+            box-shadow: 0 2px 12px var(--accent-glow), 0 0 20px rgba(249, 104, 70, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress-bar"></div>
+    <nav class="nav-dots"></nav>
+    <div class="keyboard-hint">Arrow keys or scroll to navigate</div>
+
+    <!-- ========================================
+         SLIDE 1: TITLE
+         ======================================== -->
+    <section class="slide center">
+        <div class="max-width">
+            <div class="section-label reveal">Architecture Overview</div>
+            <h1 class="reveal">Zeno <span class="highlight">HLD</span></h1>
+            <p class="subtitle reveal">Voice-First Teaching Voice Agent - System Architecture & Design</p>
+            <div class="stats reveal">
+                <div class="stat-card">
+                    <div class="stat-value">80%</div>
+                    <div class="stat-label">Workload Reduction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3min</div>
+                    <div class="stat-label">Generation Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">
+                        < $1</div>
+                            <div class="stat-label">Cost per Lesson</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">10x</div>
+                        <div class="stat-label">Cost Reduction vs Raw LLM</div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 2: WHAT ZENO DOES
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">02</div>
+        <div class="max-width">
+            <div class="section-label reveal">The Vision</div>
+            <h2 class="reveal">Autonomous Lesson Planning <span class="highlight">Through Voice</span></h2>
+
+            <div class="card card-highlight reveal" style="margin-bottom: 1rem;">
+                <h3 style="color: var(--accent); margin-bottom: 0.5rem;">The Problem</h3>
+                <p>Mentors spend <strong>hours</strong> manually creating lesson plans, slides, and practice sets for
+                    each session. Repetitive work steals time from actual teaching.</p>
+            </div>
+
+            <div style="margin-top: 0.75rem;">
+                <h3 class="reveal" style="margin-bottom: 0.75rem;">How Zeno Works</h3>
+
+                <div class="flex-row reveal">
+                    <div class="number-badge">1</div>
+                    <div>
+                        <h3>Voice Conversation (HITL)</h3>
+                        <p>Mentor speaks topic. Zeno asks 7 discovery questions using Human-in-the-Loop methodology via
+                            LiveKit.</p>
+                    </div>
+                </div>
+
+                <div class="flex-row reveal">
+                    <div class="number-badge">2</div>
+                    <div>
+                        <h3>RAG-Powered Context</h3>
+                        <p>Searches 50+ lectures via FAISS semantic search to surface related prior
+                            content.</p>
+                    </div>
+                </div>
+
+                <div class="flex-row reveal">
+                    <div class="number-badge">3</div>
+                    <div>
+                        <h3>Custom Skill Infrastructure</h3>
+                        <p>Proprietary two-phase engine: LLM parses intent into JSON spec, then <strong>deterministic
+                                renderer</strong> produces branded PPTX/DOCX. 10x cheaper than raw LLM generation.</p>
+                    </div>
+                </div>
+
+                <div class="flex-row reveal">
+                    <div class="number-badge">4</div>
+                    <div>
+                        <h3>Auto-Upload to Drive</h3>
+                        <p>Lesson plan + slides + practice sets uploaded automatically to Google Drive via OAuth2. Zero
+                            manual steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 3: SYSTEM ARCHITECTURE (HLD)
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">03</div>
+        <div class="max-width">
+            <div class="section-label reveal">High-Level Design</div>
+            <h2 class="reveal">System <span class="highlight">Architecture</span></h2>
+
+            <div class="arch-diagram reveal">
+                <div class="arch-box">
+                    <h3 style="margin-bottom: 0.4rem; font-size: 15px;">LiveKit Voice Agent</h3>
+                    <div>
+                        <span class="tech-badge">Claude Opus</span>
+                        <span class="tech-badge">Whisper STT</span>
+                        <span class="tech-badge">OpenAI TTS</span>
+                        <span class="tech-badge">120s timeout</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; font-size: 12px; color: var(--text-secondary);">Handles full HITL
+                        conversation, calls 5 specialized tools</p>
+                </div>
+
+                <div class="arch-arrow">↓</div>
+                <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin: 0.2rem 0;">5
+                    Specialized Tools (Flat Architecture - No Multi-Agent Overhead)</p>
+                <div class="arch-arrow">↓</div>
+
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-name">search_curriculum</div>
+                        <div class="tool-desc">FAISS semantic search (top-K)</div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-name">get_full_lecture</div>
+                        <div class="tool-desc">Full context retrieval (4000 chars)</div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-name">generate_lesson_plan</div>
+                        <div class="tool-desc">Separate API worker (400s timeout)</div>
+                    </div>
+                    <div class="tool-card" style="border-left-color: #e67e00; background: #fffbf5;">
+                        <div class="tool-name" style="color: #e67e00;">generate_slides</div>
+                        <div class="tool-desc">Custom Skill Infrastructure → PPTX → Drive</div>
+                    </div>
+                    <div class="tool-card" style="border-left-color: #e67e00; background: #fffbf5;">
+                        <div class="tool-name" style="color: #e67e00;">generate_practice_set</div>
+                        <div class="tool-desc">Custom Skill Infrastructure → DOCX → Drive</div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow" style="margin-top: 1rem;">↓</div>
+
+                <div class="arch-box secondary">
+                    <h3 style="margin-bottom: 0.3rem; font-size: 14px;">Google Drive Storage</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">LessonPlans/ &nbsp;|&nbsp;
+                        Slides/ &nbsp;|&nbsp; Practice/ &nbsp;(OAuth2, automatic upload)</p>
+                </div>
+            </div>
+
+            <p class="reveal"
+                style="margin-top: 1rem; text-align: center; font-size: 13px; font-style: italic; color: var(--text-secondary);">
+                <strong style="color: var(--accent);">Single Agent</strong> &nbsp;|&nbsp; No Multi-Agent Orchestration
+                &nbsp;|&nbsp; Worker Pattern for Heavy Tasks
+            </p>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 4: DATA FLOW & TECH STACK
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">04</div>
+        <div class="max-width">
+            <div class="section-label reveal">Technical Deep Dive</div>
+            <h2 class="reveal">Data Flow & <span class="highlight">Tech Stack</span></h2>
+
+            <div class="grid-2">
+                <!-- Left: RAG Pipeline -->
+                <div>
+                    <h3 class="reveal" style="margin-bottom: 0.75rem;">RAG Pipeline</h3>
+                    <div class="card reveal" style="margin-bottom: 0.75rem;">
+                        <p style="margin-bottom: 0.3rem;"><strong>1. Data Source</strong></p>
+                        <p style="font-size: 13px; margin: 0;">Data_Doc_main.txt &nbsp;|&nbsp; 316KB &nbsp;|&nbsp; 33
+                            lectures</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.75rem;">
+                        <p style="margin-bottom: 0.3rem;"><strong>2. Embeddings</strong></p>
+                        <p style="font-size: 13px; margin: 0;">OpenAI text-embedding-3-small &nbsp;|&nbsp; 1536 dims</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.75rem;">
+                        <p style="margin-bottom: 0.3rem;"><strong>3. Vector DB</strong></p>
+                        <p style="font-size: 13px; margin: 0;">FAISS IndexFlatL2 &nbsp;|&nbsp; L2 distance &nbsp;|&nbsp;
+                            202KB</p>
+                    </div>
+                    <div class="card card-highlight reveal">
+                        <p style="margin-bottom: 0.3rem;"><strong>4. Semantic Search</strong></p>
+                        <p style="font-size: 13px; margin: 0;">Real-time context injection during HITL conversation</p>
+                    </div>
+                </div>
+
+                <!-- Right: Tech Stack -->
+                <div>
+                    <h3 class="reveal" style="margin-bottom: 0.75rem;">Technology Stack</h3>
+
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p><strong>Voice I/O:</strong> LiveKit AgentSession</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p><strong>Session LLM:</strong> Claude Haiku (120s, $0.80/MTok)</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p><strong>Lesson Generator:</strong> Claude Haiku worker (400s)</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p><strong>Embeddings:</strong> OpenAI text-embedding-3-small</p>
+                    </div>
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p><strong>Vector Search:</strong> FAISS CPU (IndexFlatL2)</p>
+                    </div>
+                    <div class="card reveal"
+                        style="margin-bottom: 0.6rem; border-left: 3px solid var(--accent); background: var(--bg-highlight);">
+                        <p><strong style="color: var(--accent);">PDF/PPTX/DOCX:</strong> Custom Skill Infrastructure</p>
+                    </div>
+                    <div class="card reveal">
+                        <p><strong>Storage:</strong> Google Drive API (OAuth2)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 5: CUSTOM SKILL INFRASTRUCTURE
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">05</div>
+        <div class="max-width">
+            <div class="section-label reveal">Custom Infrastructure</div>
+            <h2 class="reveal">Custom Skill <span class="highlight">Infrastructure</span></h2>
+
+            <div class="card card-highlight reveal" style="margin-bottom: 1rem;">
+                <h3 style="color: var(--accent); margin-bottom: 0.4rem;">Why We Built This</h3>
+                <p>Anthropic's Skills API with raw LLM generation was costing <strong>10x more</strong> per deck and
+                    producing inconsistent, off-brand output. We replaced the expensive free-form generation with a
+                    <strong>deterministic rendering engine</strong> — built entirely from scratch.
+                </p>
+            </div>
+
+            <!-- Two-phase pipeline -->
+            <h3 class="reveal" style="margin-bottom: 0.5rem;">Two-Phase Pipeline Architecture</h3>
+            <div class="pipeline reveal">
+                <div class="pipeline-step">
+                    <div class="step-label">Input</div>
+                    <div class="step-name">Lesson Plan</div>
+                    <div class="step-sub">.md file</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step highlight">
+                    <div class="step-label">Phase 1: Non-Deterministic</div>
+                    <div class="step-name">LLM Parser</div>
+                    <div class="step-sub">Claude Sonnet/Haiku</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="step-label">Intermediate</div>
+                    <div class="step-name">JSON Spec</div>
+                    <div class="step-sub">Typed schema</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step deterministic">
+                    <div class="step-label">Phase 2: Deterministic</div>
+                    <div class="step-name">Python Renderer</div>
+                    <div class="step-sub">python-pptx / docx</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="step-label">Output</div>
+                    <div class="step-name">Branded File</div>
+                    <div class="step-sub">PPTX / DOCX</div>
+                </div>
+            </div>
+
+            <div class="grid-3 reveal" style="margin-top: 1rem;">
+                <div class="card">
+                    <div style="font-size: 20px; margin-bottom: 0.4rem;">&#9654;</div>
+                    <h3 style="font-size: 13px; margin-bottom: 0.3rem;">Slide Deck Skill</h3>
+                    <p style="font-size: 12px;">parser.py extracts slide structure. renderer.py builds PPTX with 9 typed
+                        slide templates using Space Grotesk + coral theme.</p>
+                </div>
+                <div class="card">
+                    <div style="font-size: 20px; margin-bottom: 0.4rem;">&#9654;</div>
+                    <h3 style="font-size: 13px; margin-bottom: 0.3rem;">Practice Set Skill</h3>
+                    <p style="font-size: 12px;">ps_parser.py extracts 3-level exercises. ps_renderer.py builds DOCX with
+                        Beginner/Intermediate/Advanced sections.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid var(--accent);">
+                    <div style="font-size: 20px; margin-bottom: 0.4rem; color: var(--accent);">&#9654;</div>
+                    <h3 style="font-size: 13px; margin-bottom: 0.3rem;">Zero Rendering Cost</h3>
+                    <p style="font-size: 12px;">Phase 2 runs pure Python. No LLM tokens consumed for formatting, layout,
+                        or branding. Only Phase 1 incurs API cost.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 6: COST COMPARISON
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">06</div>
+        <div class="max-width">
+            <div class="section-label reveal">Economics</div>
+            <h2 class="reveal">Cost Comparison: <span class="highlight">Before vs Now</span></h2>
+
+            <div class="grid-2 reveal">
+                <!-- Before -->
+                <div>
+                    <div class="card" style="border-top: 3px solid #cc4444; margin-bottom: 0;">
+                        <h3 style="color: #cc4444; font-size: 14px; margin-bottom: 0.75rem;">BEFORE - Raw LLM Generation
+                        </h3>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Model:</strong> Claude Sonnet / Opus
+                            for full generation</p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Tokens per deck:</strong> ~8k input +
+                            ~5k output</p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Sonnet cost:</strong> <span
+                                style="color: #cc4444; font-weight: 700;">~$0.099/deck</span></p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Opus cost:</strong> <span
+                                style="color: #cc4444; font-weight: 700;">~$0.495/deck</span></p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Quality:</strong> Inconsistent,
+                            off-brand layout</p>
+                        <p style="font-size: 12px;"><strong>Failure rate:</strong> High (LLM formatting errors)</p>
+                    </div>
+                </div>
+
+                <!-- After -->
+                <div>
+                    <div class="card card-highlight" style="border-top: 3px solid #22aa44; margin-bottom: 0;">
+                        <h3 style="color: #22aa44; font-size: 14px; margin-bottom: 0.75rem;">NOW - Custom Skill Infrastructure</h3>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Phase 1 (LLM):</strong> Claude Sonnet
+                            for JSON spec only</p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Tokens for spec:</strong> ~3k input +
+                            ~2k output</p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Sonnet spec cost:</strong> <span
+                                style="color: #22aa44; font-weight: 700;">~$0.039/deck</span></p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Phase 2 (Python):</strong> <span
+                                style="color: #22aa44; font-weight: 700;">$0.000/deck</span></p>
+                        <p style="font-size: 12px; margin-bottom: 0.5rem;"><strong>Quality:</strong> Pixel-perfect, brand-consistent</p>
+                        <p style="font-size: 12px;"><strong>Failure rate:</strong> Near-zero (deterministic)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary table -->
+            <table class="cost-table reveal" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Before (Sonnet raw)</th>
+                        <th>Now (Custom Infra + Sonnet)</th>
+                        <th>Saving</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Slide Deck Cost</td>
+                        <td class="old">$0.099</td>
+                        <td class="new">$0.039</td>
+                        <td class="saving">60% cheaper</td>
+                    </tr>
+                    <tr>
+                        <td>Practice Set Cost</td>
+                        <td class="old">$0.099</td>
+                        <td class="new">$0.039</td>
+                        <td class="saving">60% cheaper</td>
+                    </tr>
+                    <tr>
+                        <td>Full Lesson (plan+slides+practice)</td>
+                        <td class="old">~$0.40</td>
+                        <td class="new">~$0.13</td>
+                        <td class="saving">67% cheaper</td>
+                    </tr>
+                    <tr>
+                        <td>Output consistency</td>
+                        <td class="old">Unpredictable</td>
+                        <td class="new">100% deterministic rendering</td>
+                        <td class="saving">Zero formatting bugs</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="reveal"
+                style="margin-top: 0.75rem; text-align: center; font-size: 12px; color: var(--text-muted);">
+                * Switch Phase 1 to Claude Haiku ($0.80/MTok) for further 4x reduction. Full lesson drops to ~$0.05.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 7: LLD - UNDER THE HOOD
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">07</div>
+        <div class="max-width">
+            <div class="section-label reveal">Low-Level Design</div>
+            <h2 class="reveal">Under the <span class="highlight">Hood</span></h2>
+
+            <div class="grid-2">
+                <!-- Left: Slide Deck LLD -->
+                <div>
+                    <h3 class="reveal" style="margin-bottom: 0.75rem;">Slide Deck Generator</h3>
+
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p
+                            style="font-size: 11px; font-family: var(--font-mono); color: var(--accent); margin-bottom: 0.25rem;">
+                            Skills/slide-deck/generator/</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>parser.py</strong> &mdash; LLM
+                            extracts slide JSON spec from lesson plan. Runs Claude API call with typed schema.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>schema.py</strong> &mdash;
+                            PresentationSpec + SlideSpec Pydantic models. Validates LLM output.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>renderer.py</strong> &mdash;
+                            SlideRenderer dispatches each slide to typed render function via python-pptx.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>slide_types.py</strong> &mdash; 9
+                            typed slide renderers: title, question, comparison, reveal, process, definition,
+                            architecture, best-practice, takeaway.</p>
+                        <p style="font-size: 12px;"><strong>styles.py</strong> &mdash; Exact RGB colors, Space Grotesk
+                            font, coral (#F96846) palette enforced.</p>
+                    </div>
+
+                    <div class="card reveal" style="border-left: 3px solid var(--accent);">
+                        <p style="font-size: 12px;"><strong>Output:</strong> 13-20 slide PPTX, 10"x7.5" 16:9,
+                            pixel-perfect branding. Uploaded to Google Drive/Slides/</p>
+                    </div>
+                </div>
+
+                <!-- Right: Practice Set LLD -->
+                <div>
+                    <h3 class="reveal" style="margin-bottom: 0.75rem;">Practice Set Generator</h3>
+
+                    <div class="card reveal" style="margin-bottom: 0.6rem;">
+                        <p
+                            style="font-size: 11px; font-family: var(--font-mono); color: var(--accent); margin-bottom: 0.25rem;">
+                            Skills/practice-set-extracted/generator/</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>ps_parser.py</strong> &mdash; LLM
+                            extracts 3-level exercise spec (Beginner/Intermediate/Advanced) with web search for
+                            real-world scenarios.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>ps_schema.py</strong> &mdash;
+                            PracticeSetSpec + DifficultyLevel Pydantic models.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>ps_renderer.py</strong> &mdash;
+                            PracticeSetRenderer builds DOCX via python-docx with JetBrains Mono for code blocks.</p>
+                        <p style="font-size: 12px; margin-bottom: 0.3rem;"><strong>ps_styles.py</strong> &mdash; Colors,
+                            Fonts, FontSizes constants. Consistent brand across every document.</p>
+                        <p style="font-size: 12px;"><strong>ps_utils.py</strong> &mdash; JetBrains Mono auto-download.
+                            Table styles. Code block formatting.</p>
+                    </div>
+
+                    <div class="card reveal" style="border-left: 3px solid var(--accent);">
+                        <p style="font-size: 12px;"><strong>Output:</strong> DOCX with 3 difficulty tiers, real-world
+                            problem statements. Uploaded to Google Drive/Practice/</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats reveal" style="margin-top: 1rem;">
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Slide Types</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Difficulty Tiers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Rendering API Calls</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Brand Compliance</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 8: VOICE AGENT FLOW (LLD - CONVERSATION)
+         ======================================== -->
+    <section class="slide">
+        <div class="slide-number">08</div>
+        <div class="max-width">
+            <div class="section-label reveal">Voice Agent Flow</div>
+            <h2 class="reveal">End-to-End <span class="highlight">Session Flow</span></h2>
+
+            <div class="grid-2 reveal">
+                <div>
+                    <h3 style="margin-bottom: 0.75rem; font-size: 15px;">HITL Discovery Phase</h3>
+                    <div class="flex-row" style="margin-bottom: 0.6rem;">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">1</div>
+                        <div>
+                            <p style="font-size: 12px;"><strong>"jarvis"</strong> wake word triggers session</p>
+                        </div>
+                    </div>
+                    <div class="flex-row" style="margin-bottom: 0.6rem;">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">2</div>
+                        <div>
+                            <p style="font-size: 12px;">Mentor speaks topic (e.g., "multi-agent systems")</p>
+                        </div>
+                    </div>
+                    <div class="flex-row" style="margin-bottom: 0.6rem;">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">3</div>
+                        <div>
+                            <p style="font-size: 12px;">Agent runs <code>search_curriculum</code> → FAISS top-5</p>
+                        </div>
+                    </div>
+                    <div class="flex-row" style="margin-bottom: 0.6rem;">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">4</div>
+                        <div>
+                            <p style="font-size: 12px;">Runs <code>get_full_lecture</code> → 4000-char context</p>
+                        </div>
+                    </div>
+                    <div class="flex-row" style="margin-bottom: 0.6rem;">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">5</div>
+                        <div>
+                            <p style="font-size: 12px;">7 discovery questions (Socratic, voice, one-at-a-time)</p>
+                        </div>
+                    </div>
+                    <div class="flex-row">
+                        <div class="number-badge" style="width: 28px; height: 28px; font-size: 12px;">6</div>
+                        <div>
+                            <p style="font-size: 12px;"><code>generate_lesson_plan</code> worker (400s, separate API
+                                call)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 0.75rem; font-size: 15px;">Content Generation Phase</h3>
+
+                    <div class="card" style="margin-bottom: 0.6rem; border-left: 3px solid var(--accent);">
+                        <p style="font-size: 12px; margin-bottom: 0.25rem;"><strong>Lesson Plan Worker</strong></p>
+                        <p style="font-size: 11px;">Extracts HITL chat history → Claude Haiku (400s timeout) → 1500-word
+                            Markdown → Drive/LessonPlans/</p>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0.6rem; border-left: 3px solid #e67e00;">
+                        <p style="font-size: 12px; margin-bottom: 0.25rem;"><strong>Slide Generation (voice: "make
+                                slides")</strong></p>
+                        <p style="font-size: 11px;">skills_handler.generate_slides() → upload .md → Anthropic Skills
+                            container → Custom Skill Infrastructure → PPTX → Drive/Slides/</p>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0.6rem; border-left: 3px solid #e67e00;">
+                        <p style="font-size: 12px; margin-bottom: 0.25rem;"><strong>Practice Set (voice: "make
+                                practice")</strong></p>
+                        <p style="font-size: 11px;">skills_handler.generate_practice_set() → same pipeline → DOCX →
+                            Drive/Practice/</p>
+                    </div>
+
+                    <div class="card card-highlight">
+                        <p style="font-size: 12px; margin-bottom: 0.25rem;"><strong>End State</strong></p>
+                        <p style="font-size: 11px;">Agent speaks Drive links. User says "good night" → session closes.
+                            Zero manual steps taken.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+         SLIDE 9: SUMMARY / VISION
+         ======================================== -->
+    <section class="slide center">
+        <div class="slide-number"></div>
+        <div class="max-width">
+            <div class="section-label reveal">Summary</div>
+            <h1 class="reveal">Built by <span class="highlight">Vishal</span></h1>
+            <p class="subtitle reveal" style="margin: 0 auto 1.5rem;">A voice agent that listens, reasons, and produces
+                production-quality teaching materials — with a proprietary skill engine that makes it 10x cheaper than
+                out-of-the-box AI generation.</p>
+
+            <div class="stats reveal">
+                <div class="stat-card">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Voice Agent</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Specialized Tools</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Custom Skill Engines</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Manual Steps</div>
+                </div>
+            </div>
+
+            <div class="grid-3 reveal" style="margin-top: 1.25rem;">
+                <div class="card card-highlight">
+                    <h3 style="color: var(--accent); font-size: 13px; margin-bottom: 0.4rem;">Voice-First</h3>
+                    <p style="font-size: 12px;">Hands-free from wake word to Drive upload. Built for Raspberry Pi
+                        deployment.</p>
+                </div>
+                <div class="card card-highlight">
+                    <h3 style="color: var(--accent); font-size: 13px; margin-bottom: 0.4rem;">RAG-Powered</h3>
+                    <p style="font-size: 12px;">33-lecture curriculum always in context. Socratic questions reference
+                        actual lecture content.</p>
+                </div>
+                <div class="card card-highlight">
+                    <h3 style="color: var(--accent); font-size: 13px; margin-bottom: 0.4rem;">Custom Skill Infrastructure</h3>
+                    <p style="font-size: 12px;">Deterministic rendering. 10x cost reduction. Pixel-perfect branded
+                        output every time.</p>
+                </div>
+            </div>
+
+            <div class="badge reveal" style="margin-top: 1.5rem; font-size: 12px;">From spoken topic to complete
+                teaching materials in under 4 minutes</div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         JAVASCRIPT: SLIDE PRESENTATION CONTROLLER
+         =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.progressBar = document.querySelector('.progress-bar');
+                this.navDots = document.querySelector('.nav-dots');
+                this.init();
+            }
+
+            init() {
+                this.slides.forEach((slide, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot';
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.navDots.appendChild(dot);
+                });
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            this.currentSlide = Array.from(this.slides).indexOf(entry.target);
+                            this.updateProgress();
+                            this.updateDots();
+                        }
+                    });
+                }, { threshold: 0.5, rootMargin: '0px' });
+
+                this.slides.forEach(slide => observer.observe(slide));
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    } else if (e.key === 'Home') {
+                        e.preventDefault();
+                        this.goToSlide(0);
+                    } else if (e.key === 'End') {
+                        e.preventDefault();
+                        this.goToSlide(this.slides.length - 1);
+                    }
+                });
+
+                let wheelTimeout;
+                document.addEventListener('wheel', (e) => {
+                    if (wheelTimeout) return;
+                    if (e.deltaY > 0) { this.nextSlide(); } else if (e.deltaY < 0) { this.prevSlide(); }
+                    wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 1000);
+                }, { passive: true });
+
+                let touchStartY = 0;
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const diff = touchStartY - e.changedTouches[0].clientY;
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) { this.nextSlide(); } else { this.prevSlide(); }
+                    }
+                }, { passive: true });
+
+                this.slides[0].classList.add('visible');
+                this.updateProgress();
+                this.updateDots();
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.slides.length - 1) { this.goToSlide(this.currentSlide + 1); }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) { this.goToSlide(this.currentSlide - 1); }
+            }
+
+            goToSlide(index) {
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateProgress();
+                this.updateDots();
+            }
+
+            updateProgress() {
+                const progress = ((this.currentSlide + 1) / this.slides.length) * 100;
+                this.progressBar.style.width = `${progress}%`;
+            }
+
+            updateDots() {
+                const dots = this.navDots.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => { new SlidePresentation(); });
+        } else {
+            new SlidePresentation();
+        }
+    </script>
+</body>
+
+</html>
